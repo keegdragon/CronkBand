@@ -50,6 +50,33 @@ class Dice:
         """Change the name of this hand of dice."""
         self.name = name
 
+class FloorPlan:
+    """Describes a room's dimensions"""
+
+    def __init__(self, plan):
+        self.plan = plan
+        self.x = plan[0].length()
+        self.y = plan.length()
+    
+class Actor:
+    """Generic actor for building map"""
+    def __init___(self):
+        self.solid = False
+
+    def bump(self, whos_there):
+        return self.solid
+
+#once we know how to extend, let's do...
+class Pile(self):
+    """A pile of something."""
+    def __init__(self, stuff):
+        self.stuff = stuff
+        self.solid = False
+
+    def bump(self, whos_there):
+        whos_there.add_item(stuff)
+
+#need item class
 
 class Character:
     """Describes a character."""
