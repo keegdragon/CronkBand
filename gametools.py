@@ -67,7 +67,7 @@ class Actor:
         return self.solid
 
 #once we know how to extend, let's do...
-class Pile(self):
+class Pile:
     """A pile of something."""
     def __init__(self, stuff):
         self.stuff = stuff
