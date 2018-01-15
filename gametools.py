@@ -25,7 +25,7 @@ class Dice:
             d_key = str(d)
             v_list = []
             for i in range(self.hand(d_key)):
-                roll = r.randint(0,d)
+                roll = r.randint(1,d)
                 v_list.append(roll)
             rolls[d_key] = v_list
         else:
