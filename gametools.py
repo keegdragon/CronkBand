@@ -4,7 +4,7 @@ class Dice:
     """Describes a handful of dice."""
     # We will probably want a more efficient way to resolve rolls, but 
     # for now it's nice to have the abstraction of a hand of dice.
-
+    # Ha GAYYYY
     def __init__(self, d=6, n=0, name=''):
         self.name = name if (name != '') else 'Dice'
         if n > 0:
