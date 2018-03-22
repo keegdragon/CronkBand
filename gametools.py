@@ -2,7 +2,9 @@ import random as r
 
 class Dice:
     """Describes a handful of dice."""
-    
+    # We will probably want a more efficient way to resolve rolls, but 
+    # for now it's nice to have the abstraction of a hand of dice.
+
     def __init__(self, d=6, n=0, name=''):
         self.name = name if (name != '') else 'Dice'
         if n > 0:
@@ -25,7 +27,7 @@ class Dice:
             d_key = str(d)
             v_list = []
             for i in range(self.hand(d_key)):
-                roll = r.randint(0,d)
+                roll = r.randint(1,d)
                 v_list.append(roll)
             rolls[d_key] = v_list
         else:
@@ -52,7 +54,7 @@ class Dice:
 
 class FloorPlan:
     """Describes a room's dimensions"""
-
+    # Seems to be that this only supports rectangles at the moment.
     def __init__(self, plan):
         self.plan = plan
         self.x = plan[0].length()
@@ -66,8 +68,7 @@ class Actor:
     def bump(self, whos_there):
         return self.solid
 
-#once we know how to extend, let's do...
-class Pile:
+class Pile(Actor):
     """A pile of something."""
     def __init__(self, stuff):
         self.stuff = stuff
@@ -76,21 +77,44 @@ class Pile:
     def bump(self, whos_there):
         whos_there.add_item(stuff)
 
-#need item class
+class Item:
+    """An Item can be held in a Character or Pile's inventory"""
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+    # We'll need to have a good long chat about how we want Items to 
+    # work:
+    # Should Item be a barebones class that is extended by e.g. Weapon?
+    # Should Item be used for ALL items with flags for item type?
+    # Should Item have a generic Use method that is made more specific
+    # for each derived class e.g. Weapon, Potion?
 
-class Character:
+class Character(Actor):
     """Describes a character."""
 
-    def __init__(self, name, status={}, abilities={}, inventory={}, 
-                 spellbook={}):
+    def __init__(self, name, status=[], abilities=[], skills=[],
+                 equipment = [], inventory={}, spellbook=[]):
         self.name = name
         self.status = status
         self.abilities = abilities
+        self.skills = skills
         self.inventory = inventory
         self.spellbook = spellbook
+        self.solid = True
+    
+    # EXAMPLE
+    # name = 'Name McNameFace'
+    # status = [health, max_health, level, exp]           [int]
+    # abilities = [str, dex, con, int, wis, cha]          [int]
+    # skills = [acr, ani han, arc, ..., ste, sur]         [bool]
+    # equipment = [armor, hat, shoes, gloves, 
+    #              ring1, ring2, ..., necklace, 
+    #              left_hand, right_hand]                 [Item] 
+    # inventory = [potion_heal_a, pen, paper, quest_item] [Item]
+    # spellbook = [fireball, healing, ... ]               [Spell]
 
     def show_summary(self):
-        """Print character status, abilities, inventory, and spellbook."""
+        """Print all info about Character."""
         print(self.name)
         print('\nStatus: ')
         for stat, val in self.status.items():
@@ -101,7 +125,8 @@ class Character:
         print('\nInventory: ')
         for name, stuff in self.inventory.items():
             print(name + ': ' + str(self.inventory[name]['quantity']) 
-                       + ', worth: ' + str(self.inventory[name]['total_value']))
+                       + ', worth: ' 
+                       + str(self.inventory[name]['total_value']))
         print('\nSpellbook: ')
         for spell in self.spellbook.keys():
             print(spell)
@@ -122,7 +147,8 @@ class Character:
             print('Description: ' + self.inventory[name]['description'])
             if self.inventory[name]['quantity'] > 1:
                 print('Value: ' + str(self.inventory[name]['value']))
-            print('Total Value: ' + str(self.inventory[name]['total_value']) + '\n' )
+            print('Total Value: ' 
+                  + str(self.inventory[name]['total_value']) + '\n' )
         print()
 
     def add_item(self, name, quantity, description='', value_per=0):
@@ -138,7 +164,7 @@ class Character:
                                     'total_value': value_per * quantity}
     
     def drop_item(self, name, quantity):
-        """Remove some or all of one type of item from the inventory."""
+        """Remove some or all of one item from the inventory."""
         if name in self.inventory.keys():
             quant_in = self.inventory[name]['quantity']
             if quant_in > quantity:
