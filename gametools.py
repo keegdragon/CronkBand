@@ -64,20 +64,19 @@ class FloorPlan:
 
 class Item:
     """An Item can be held in a Character or Pile's inventory"""
-    def __init__(self, name='', mass=0, description='', quantity=1))
+    def __init__(self, name='', mass=0, description='', quantity=1):
         self.name = name
         self.mass = mass
         self.description = description
         self.quantity = quantity
 
-    def use(self, logger):
-        # Nothing happens
 
 class Spell(Item):
     """Spells are used from the inventory to cast magic. idk how yet """
-
     def use(self, logger):
-        logger.do_magic #We'll figure this out soon
+        logger.do_magic
+        #We'll figure this out soon
+
 
 class Actor:
     """Generic actor for building map"""
@@ -91,11 +90,11 @@ class Actor:
 class Pile(Actor):
     """A pile of something."""
 
-     def __init__(self, stuff):
+    def __init__(self, stuff):
           self.stuff = stuff
           self.solid = False
 
-     def bump(self, whos_there):
+    def bump(self, whos_there):
           whos_there.add_item(stuff)
 
 
@@ -189,7 +188,7 @@ class Character(Actor):
             if itm.name == name:
                 if itm.quantity > quantity:
                     itm.quantity -= quantity
-                else
+                else:
                     self.inventory.remove(itm)
                 found = True
                 break
