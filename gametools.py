@@ -1,5 +1,6 @@
 import random as r
 
+
 class Dice:
     """Describes a handful of dice."""
     # We will probably want a more efficient way to resolve rolls, but 
@@ -9,7 +10,7 @@ class Dice:
         self.name = name if (name != '') else 'Dice'
         if n > 0:
             d_key = str(d)
-            self.hand = {d_key:n}
+            self.hand = {d_key: n}
         elif n == 0:
             self.hand = {}
         else:
@@ -74,13 +75,12 @@ class Item:
 class Spell(Item):
     """Spells are used from the inventory to cast magic. idk how yet """
     def use(self, logger):
-        logger.do_magic
+        logger.do_magic()
         #We'll figure this out soon
 
 
 class Actor:
     """Generic actor for building map"""
-
     def __init___(self):
         self.solid = False
 
@@ -153,11 +153,15 @@ class Character(Actor):
             print(abilities_list[abl] + ': ' + str(self.abilities[abl]))
         print('\nSkills: ')
         for skl in range(len(self.skills)):
-            print(skills_list[skl] + ': ' + str(self.skills[skl]))
+            if self.skills[skl]:
+                print(skills_list[skl])
+        print('\nEquipment:')
         for eqp in self.equipment:
             print(eqp.name)
+        print('\nInventory:')
         for itm in self.inventory:
             print(itm.name + ' x' + str(itm.quantity))
+        print('\nSpellbooks:')
         for spl in self.spellbook:
             print(spl.name)
 
@@ -179,9 +183,9 @@ class Character(Actor):
                 found = True
                 break
         if not found:
-            self.inventory.append(new_itm)
+            self.inventory.append(new_item)
     
-    def drop_item(self, name, quantity):
+    def drop_item(self, name, quantity=1):
         """Remove some or all of one item from the inventory."""
         found = False
         for itm in self.inventory:
