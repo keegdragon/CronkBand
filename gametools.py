@@ -3,7 +3,8 @@ import random as r
 
 class Dice:
     """Describes a handful of dice."""
-    # We will probably want a more efficient way to resolve rolls, but 
+
+    # We will probably want a more efficient way to resolve rolls, but
     # for now it's nice to have the abstraction of a hand of dice.
 
     def __init__(self, d=6, n=0, name=''):
@@ -16,11 +17,11 @@ class Dice:
         else:
             print("You cannot have negative dice! No dice added to hand.")
             self.hand = {}
-    
+
     def check(self):
         """Return whichever dice are currently in hand."""
         return self.hand
-        
+
     def roll(self, d=0):
         """Roll dice currently in hand and return results."""
         rolls = {}
@@ -28,14 +29,14 @@ class Dice:
             d_key = str(d)
             v_list = []
             for i in range(self.hand(d_key)):
-                roll = r.randint(1,d)
+                roll = r.randint(1, d)
                 v_list.append(roll)
             rolls[d_key] = v_list
         else:
             for d, n in self.hand.items():
                 v_list = []
                 for j in range(n):
-                    roll = r.randint(0, int(d))
+                    roll = r.randint(1, int(d))
                     v_list.append(roll)
                 rolls[d] = v_list
         return rolls
@@ -43,12 +44,12 @@ class Dice:
     def drop(self):
         """Drop all dice from hand."""
         self.hand = {}
-    
+
     def grab(self, d, n):
         """Add n dice of type d to hand."""
         dn = str(d)
         self.hand[dn] = n if dn not in self.hand else self.hand[dn] + n
-   
+
     def rename(self, name):
         """Change the name of this hand of dice."""
         self.name = name
@@ -56,15 +57,17 @@ class Dice:
 
 class FloorPlan:
     """Describes a room's dimensions"""
+
     # Seems to be that this only supports rectangles at the moment.
     def __init__(self, plan):
         self.plan = plan
         self.x = plan[0].length()
         self.y = plan.length()
-    
+
 
 class Item:
     """An Item can be held in a Character or Pile's inventory"""
+
     def __init__(self, name='', mass=0, description='', quantity=1):
         self.name = name
         self.mass = mass
@@ -74,28 +77,31 @@ class Item:
 
 class Spell(Item):
     """Spells are used from the inventory to cast magic. idk how yet """
+
     def use(self, logger):
         logger.do_magic()
-        #We'll figure this out soon
+        # We'll figure this out soon
 
 
 class Actor:
     """Generic actor for building map"""
+
     def __init___(self):
         self.solid = False
 
     def bump(self, whos_there):
         return self.solid
 
+
 class Pile(Actor):
     """A pile of something."""
 
     def __init__(self, stuff):
-          self.stuff = stuff
-          self.solid = False
+        self.stuff = stuff
+        self.solid = False
 
     def bump(self, whos_there):
-          whos_there.add_item(stuff)
+        whos_there.add_item(self.stuff)
 
 
 class Character(Actor):
@@ -116,11 +122,10 @@ class Character(Actor):
                  name='',
                  status=[0, 0, 0, 0],
                  abilities=[0, 0, 0, 0, 0, 0],
-                 skills=[False, False, False, False, False,
-                         False, False, False, False, False,
-                         False, False, False, False, False,
-                         False, False, False],
-                 equipment = [],
+                 skills=[False, False, False, False, False, False, False,
+                         False, False, False, False, False, False, False,
+                         False, False, False, False],
+                 equipment=[],
                  inventory=[],
                  spellbook=[]):
         self.name = name
@@ -184,7 +189,7 @@ class Character(Actor):
                 break
         if not found:
             self.inventory.append(new_item)
-    
+
     def drop_item(self, name, quantity=1):
         """Remove some or all of one item from the inventory."""
         found = False
@@ -202,11 +207,11 @@ class Character(Actor):
 
 class Encounter:
     """Describes the geography of an encounter."""
-    
+
     def __init__(self, area, atlas={}, people={}, symbols={}):
         self.atlas = atlas
-        self.people = people 
-        self.symbols = symbols 
+        self.people = people
+        self.symbols = symbols
         self.X = area[0]
         self.Y = area[1]
 
