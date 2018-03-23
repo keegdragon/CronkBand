@@ -118,48 +118,47 @@ class Character(Actor):
     spellbook = [fireball, healing, ... ]               [Spell]
     """
 
-    def __init__(self,
-                 name='',
-                 status=[0, 0, 0, 0],
-                 abilities=[0, 0, 0, 0, 0, 0],
-                 skills=[False, False, False, False, False, False, False,
-                         False, False, False, False, False, False, False,
-                         False, False, False, False],
-                 equipment=[],
-                 inventory=[],
-                 spellbook=[]):
+    def __init__(self, name, status=[], abilities=[], skills=[], equipment=[],
+                 inventory=[], spellbook=[]):
         self.name = name
-        self.status = status
-        self.abilities = abilities
-        self.skills = skills
+        self.status = (status if status != [] else [10, 10, 1, 0])
+        self.status_list = ['Health', 'Max Health', 'Level', 'Experience']
+        self.abilities = (abilities if abilities != [] else [8, 8, 8, 8, 8, 8])
+        self.abilities_list = ['Strength', 'Dexterity', 'Constitution',
+                               'Intelligence', 'Wisdom', 'Charisma']
+        self.skills = (skills if skills != [] else [False, False, False, False,
+                                                    False, False, False, False,
+                                                    False, False, False, False,
+                                                    False, False, False, False,
+                                                    False, False])
+        self.skills_list = ['Acrobatics', 'Animal Handling', 'Arcana',
+                            'Athletics', 'Deception', 'History', 'Insight',
+                            'Intimidation', 'Investigation', 'Medicine',
+                            'Nature', 'Perception', 'Performance',
+                            'Persuasion', 'Religion', 'Sleight of Hand',
+                            'Stealth', 'Survival']
         self.equipment = equipment
         self.inventory = inventory
         self.spellbook = spellbook
         self.solid = True
 
+
     def show_summary(self):
         """Print all info about Character.
         Mostly just for development purposes, but could be used later.
         """
-        status_list = ['Health', 'Max Health', 'Level', 'Experience']
-        abilities_list = ['Strength', 'Dexterity', 'Constitution',
-                          'Intelligence', 'Wisdom', 'Charisma']
-        skills_list = ['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics',
-                       'Deception', 'History', 'Insight', 'Intimidation',
-                       'Investigation', 'Medicine', 'Nature', 'Perception',
-                       'Performance', 'Persuasion', 'Religion',
-                       'Sleight of Hand', 'Stealth', 'Survival']
+
         print(self.name)
         print('\nStatus: ')
         for stt in range(len(self.status)):
-            print(status_list[stt] + ': ' + str(self.status[stt]))
+            print(self.status_list[stt] + ': ' + str(self.status[stt]))
         print('\nAbilities: ')
         for abl in range(len(self.abilities)):
-            print(abilities_list[abl] + ': ' + str(self.abilities[abl]))
+            print(self.abilities_list[abl] + ': ' + str(self.abilities[abl]))
         print('\nSkills: ')
         for skl in range(len(self.skills)):
             if self.skills[skl]:
-                print(skills_list[skl])
+                print(self.skills_list[skl])
         print('\nEquipment:')
         for eqp in self.equipment:
             print(eqp.name)
@@ -203,6 +202,24 @@ class Character(Actor):
                 break
         if not found:
             print('No item by that name in inventory!')
+
+    def toggle_skill(self, skill_name):
+        """Toggle on or off a skill by name (case-insensitive)"""
+        found = False
+        real_skill_name = ''
+        new_skill_state = False
+        for skl in self.skills_list:
+            if skl.lower() == skill_name.lower():
+                found = True
+                real_skill_name = skl
+                skl_idx = self.skills_list.index(skl)
+                self.skills[skl_idx] = not self.skills[skl_idx]
+                new_skill_state = self.skills[skl_idx]
+                break
+        if not found:
+            print('No skill of that name was found.')
+        else:
+            print(real_skill_name + ' was changed to ' + str(new_skill_state))
 
 
 class Encounter:
