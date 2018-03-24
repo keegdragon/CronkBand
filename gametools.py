@@ -142,7 +142,6 @@ class Character(Actor):
         self.spellbook = spellbook
         self.solid = True
 
-
     def show_summary(self):
         """Print all info about Character.
         Mostly just for development purposes, but could be used later.
@@ -232,8 +231,12 @@ class Encounter:
         self.X = area[0]
         self.Y = area[1]
 
-    def add_character(self, name, character, symbol, position):
+    def add_character(self, character, position, name='', symbol='', ):
         """Add a character to the encounter."""
+        if name == '':
+            name = character.name
+        if symbol == '':
+            symbol = character.name.strip()[0].lower()
         self.atlas[name] = position
         self.people[name] = character
         self.symbols[name] = symbol
