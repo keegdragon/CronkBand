@@ -118,28 +118,29 @@ class Character(Actor):
     spellbook = [fireball, healing, ... ]               [Spell]
     """
 
-    def __init__(self, name, status=[], abilities=[], skills=[], equipment=[],
-                 inventory=[], spellbook=[]):
+    def __init__(self, name, status=None, abilities=None, skills=None, 
+                 equipment=None, inventory=None, spellbook=None):
         self.name = name
-        self.status = (status if status != [] else [10, 10, 1, 0])
+        self.status = (status if status != None else [10, 10, 1, 0])
         self.status_list = ['Health', 'Max Health', 'Level', 'Experience']
-        self.abilities = (abilities if abilities != [] else [8, 8, 8, 8, 8, 8])
+        self.abilities = (abilities if abilities != None else [8, 8, 8, 8, 8, 8])
         self.abilities_list = ['Strength', 'Dexterity', 'Constitution',
                                'Intelligence', 'Wisdom', 'Charisma']
-        self.skills = (skills if skills != [] else [False, False, False, False,
-                                                    False, False, False, False,
-                                                    False, False, False, False,
-                                                    False, False, False, False,
-                                                    False, False])
+        self.skills = (skills if skills != None else [False, False, False, 
+                                                      False, False, False, 
+                                                      False, False, False, 
+                                                      False, False, False,
+                                                      False, False, False, 
+                                                      False, False, False])
         self.skills_list = ['Acrobatics', 'Animal Handling', 'Arcana',
                             'Athletics', 'Deception', 'History', 'Insight',
                             'Intimidation', 'Investigation', 'Medicine',
                             'Nature', 'Perception', 'Performance',
                             'Persuasion', 'Religion', 'Sleight of Hand',
                             'Stealth', 'Survival']
-        self.equipment = equipment
-        self.inventory = inventory
-        self.spellbook = spellbook
+        self.equipment = equipment if equipment != None else []
+        self.inventory = inventory if inventory != None else []
+        self.spellbook = spellbook if spellbook != None else []
         self.solid = True
 
     def show_summary(self):
