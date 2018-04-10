@@ -120,34 +120,34 @@ class Character(Actor):
 
     def __init__(self, name, status=None, abilities=None, skills=None, 
                  equipment=None, inventory=None, spellbook=None):
-        self.name = name
-        self.status = (status if status != None else [10, 10, 1, 0])
-        self.status_list = ['Health', 'Max Health', 'Level', 'Experience']
-        self.abilities = (abilities if abilities != None else [8, 8, 8, 8, 8, 8])
+        self.status_list    = ['Health', 'Max Health', 'Level', 'Experience']
         self.abilities_list = ['Strength', 'Dexterity', 'Constitution',
                                'Intelligence', 'Wisdom', 'Charisma']
+        self.skills_list    = ['Acrobatics', 'Animal Handling', 'Arcana',
+                               'Athletics', 'Deception', 'History', 'Insight',
+                               'Intimidation', 'Investigation', 'Medicine',
+                               'Nature', 'Perception', 'Performance',
+                               'Persuasion', 'Religion', 'Sleight of Hand',
+                               'Stealth', 'Survival']
+        self.name = name
+        self.status = (status if status != None else [10, 10, 1, 0])
+        self.abilities = (abilities if abilities != None 
+                                    else [8, 8, 8, 8, 8, 8])
         self.skills = (skills if skills != None else [False, False, False, 
                                                       False, False, False, 
                                                       False, False, False, 
                                                       False, False, False,
                                                       False, False, False, 
                                                       False, False, False])
-        self.skills_list = ['Acrobatics', 'Animal Handling', 'Arcana',
-                            'Athletics', 'Deception', 'History', 'Insight',
-                            'Intimidation', 'Investigation', 'Medicine',
-                            'Nature', 'Perception', 'Performance',
-                            'Persuasion', 'Religion', 'Sleight of Hand',
-                            'Stealth', 'Survival']
-        self.equipment = equipment if equipment != None else []
-        self.inventory = inventory if inventory != None else []
-        self.spellbook = spellbook if spellbook != None else []
+        self.equipment = (equipment if equipment != None else [])
+        self.inventory = (inventory if inventory != None else [])
+        self.spellbook = (spellbook if spellbook != None else [])
         self.solid = True
 
     def show_summary(self):
         """Print all info about Character.
         Mostly just for development purposes, but could be used later.
         """
-
         print(self.name)
         print('\nStatus: ')
         for stt in range(len(self.status)):
@@ -202,6 +202,16 @@ class Character(Actor):
                 break
         if not found:
             print('No item by that name in inventory!')
+
+    def equip_item(self, name):
+        """Move an item from the inventory to the equipment"""
+        found = False
+        for itm in self.inventory:
+            if itm.name.lower() == name.lower():
+                self.equipment.append(itm)
+                self.drop_item(itm.name)
+                found = True
+        print(('Item equipped' if found else 'No item by that name found.'))
 
     def toggle_skill(self, skill_name):
         """Toggle on or off a skill by name (case-insensitive)"""
