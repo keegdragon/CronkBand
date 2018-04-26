@@ -6,7 +6,7 @@ class Dice:
 
     # We will probably want a more efficient way to resolve rolls, but
     # for now it's nice to have the abstraction of a hand of dice.
-
+    # Ha GAYYYY
     def __init__(self, d=6, n=0, name=''):
         self.name = name if (name != '') else 'Dice'
         if n > 0:
@@ -260,6 +260,21 @@ class Encounter:
         del self.atlas[name]
         del self.people[name]
         del self.symbols[name]
+
+    def make_drawable(self):
+        """Package the encounter to a drawable format for GameView"""
+        drawable_env = []
+        for i in range(self.Y):
+            drawable_line = ""
+            for j in range(self.X):
+                who = '.'
+                for a, b in self.atlas.items():
+                    if [j, i] == b:
+                        someone_here = True
+                        who = self.symbols[a]
+                drawable_line += who
+            drawable_env.append(drawable_line)
+        return drawable_env
 
     def draw(self):
         """Draw a rough map of the characters in the encounter."""

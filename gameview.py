@@ -1,5 +1,4 @@
 import pygame
-from pygame.event import Event, event_name, wait
 pygame.init()
 
 class GameView:
@@ -11,7 +10,7 @@ class GameView:
         Setting mode opens window"""
         self.size = width, height
         self.displaySurface = pygame.display.set_mode(self.size)
-        self.font = pygame.font.Font(None, 60)
+        self.font = pygame.font.Font(pygame.font.match_font("couriernew"), int(height / 40))
 
     def openWindow(self):
         """Opens window of designated size; returns window object"""
@@ -19,14 +18,14 @@ class GameView:
 
     def draw(self, env):
         ren = self.font.render(env, 0, (0,0,255), (0,0,0))
-        self.displaySurface.blit(ren, (10, 10))
+        self.displaySurface.blit(ren, (0, 0))
         pygame.display.flip()
 
-
-if __name__ == '__main__':
-    testWindow = GameView(1024, 768)
-    #testWindow.openWindow()
-    testWindow.draw("hello world!")
-    pygame.event.wait()
-    testWindow.draw("you pressed a button!")
-    pygame.event.wait()
+    def drawScreen(self, env):
+        self.displaySurface.fill(pygame.Color(0, 0, 0))
+        yToRender = 0
+        for line in env:
+            ren = self.font.render(line, 0, (230,230,230), (0,0,0))
+            self.displaySurface.blit(ren, (0, yToRender))
+            pygame.display.flip()
+            yToRender += int(self.size[1] / 40)

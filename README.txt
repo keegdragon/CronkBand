@@ -31,3 +31,8 @@ When CronkBand is playable, we hope that you'll enjoy it. Until then,
 wish us luck!
 
 -Alex and Keegan
+
+
+
+UPDATE 01
+We can move a boy around the screen now using a test method.
