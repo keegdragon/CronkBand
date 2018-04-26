@@ -8,6 +8,7 @@
 
                               CRONKBAND
                              VERSION 0.1
+          OR: HOW I LEARNED TO STOP WORRYING AND LOVE THE BOY
 
 CronkBand is a home-brewed shameless AngBand rip-off by shameless 
 rippers-off Alex Lutton and Keegan Patterson. CronkBand is being 
@@ -32,7 +33,8 @@ wish us luck!
 
 -Alex and Keegan
 
+                             CRONKBAND
+                            VERSION 0.2
+                       HONEY, I MOVED THE BOY
 
-
-UPDATE 01
 We can move a boy around the screen now using a test method.
