@@ -105,43 +105,32 @@ class Pile(Actor):
 
 
 class Character(Actor):
-    """Describes a character.
-    EXAMPLE
-    name = 'Name McNameFace'
-    status = [health, max_health, level, exp]           [int]
-    abilities = [str, dex, con, int, wis, cha]          [int]
-    skills = [acr, ani han, arc, ..., ste, sur]         [bool]
-    equipment = [armor, hat, shoes, gloves,
-                 ring1, ring2, ..., necklace,
-                 left_hand, right_hand]                 [Item]
-    inventory = [potion_heal_a, pen, paper, quest_item] [Item]
-    spellbook = [fireball, healing, ... ]               [Spell]
-    """
+    """Describes a player-character based on D&D character sheet."""
 
     def __init__(self, name, status=None, abilities=None, skills=None, 
                  equipment=None, inventory=None, spellbook=None):
-        self.status_list    = ['Health', 'Max Health', 'Level', 'Experience']
+        self.status_list = ['Health', 'Max Health', 'Level', 'Experience']
         self.abilities_list = ['Strength', 'Dexterity', 'Constitution',
                                'Intelligence', 'Wisdom', 'Charisma']
-        self.skills_list    = ['Acrobatics', 'Animal Handling', 'Arcana',
-                               'Athletics', 'Deception', 'History', 'Insight',
-                               'Intimidation', 'Investigation', 'Medicine',
-                               'Nature', 'Perception', 'Performance',
-                               'Persuasion', 'Religion', 'Sleight of Hand',
-                               'Stealth', 'Survival']
+        self.skills_list = ['Acrobatics', 'Animal Handling', 'Arcana',
+                            'Athletics', 'Deception', 'History', 'Insight',
+                            'Intimidation', 'Investigation', 'Medicine',
+                            'Nature', 'Perception', 'Performance',
+                            'Persuasion', 'Religion', 'Sleight of Hand',
+                            'Stealth', 'Survival']
         self.name = name
-        self.status = (status if status != None else [10, 10, 1, 0])
-        self.abilities = (abilities if abilities != None 
-                                    else [8, 8, 8, 8, 8, 8])
-        self.skills = (skills if skills != None else [False, False, False, 
-                                                      False, False, False, 
-                                                      False, False, False, 
-                                                      False, False, False,
-                                                      False, False, False, 
-                                                      False, False, False])
-        self.equipment = (equipment if equipment != None else [])
-        self.inventory = (inventory if inventory != None else [])
-        self.spellbook = (spellbook if spellbook != None else [])
+        self.status = (status if status is not None else [10, 10, 1, 0])
+        self.abilities = (abilities if abilities is not None
+                          else [8, 8, 8, 8, 8, 8])
+        self.skills = (skills if skills is not None else [False, False, False,
+                                                          False, False, False,
+                                                          False, False, False,
+                                                          False, False, False,
+                                                          False, False, False,
+                                                          False, False, False])
+        self.equipment = (equipment if equipment is not None else [])
+        self.inventory = (inventory if inventory is not None else [])
+        self.spellbook = (spellbook if spellbook is not None else [])
         self.solid = True
 
     def show_summary(self):
@@ -178,7 +167,7 @@ class Character(Actor):
             print('Description: ' + itm.description)
         print()
 
-    def add_item(self, new_item):
+    def add(self, new_item):
         """Add an/many item/s to the inventory."""
         found = False
         for itm in self.inventory:
@@ -189,7 +178,7 @@ class Character(Actor):
         if not found:
             self.inventory.append(new_item)
 
-    def drop_item(self, name, quantity=1):
+    def drop(self, name, quantity=1):
         """Remove some or all of one item from the inventory."""
         found = False
         for itm in self.inventory:
@@ -203,8 +192,8 @@ class Character(Actor):
         if not found:
             print('No item by that name in inventory!')
 
-    def equip_item(self, name):
-        """Move an item from the inventory to the equipment"""
+    def equip(self, name):
+        """Move an item from the inventory to the equipment."""
         found = False
         for itm in self.inventory:
             if itm.name.lower() == name.lower():
@@ -212,6 +201,16 @@ class Character(Actor):
                 self.drop_item(itm.name)
                 found = True
         print(('Item equipped' if found else 'No item by that name found.'))
+
+    def unequip(self, name):
+        """Move an item from the equipment to the inventory."""
+        found = False
+        for itm in self.equipment:
+            if itm.name.lower() == name.lower():
+                self.add_item(itm)
+                self.equipment.remove(itm)
+                found = True
+        print(('Item unequipped' if found else 'No item by that name found.'))
 
     def toggle_skill(self, skill_name):
         """Toggle on or off a skill by name (case-insensitive)"""
@@ -235,10 +234,10 @@ class Character(Actor):
 class Encounter:
     """Describes the geography of an encounter."""
 
-    def __init__(self, area, atlas={}, people={}, symbols={}):
-        self.atlas = atlas
-        self.people = people
-        self.symbols = symbols
+    def __init__(self, area, atlas=None, people=None, symbols=None):
+        self.atlas = (atlas if atlas is not None else {})
+        self.people = (people if people is not None else {})
+        self.symbols = (symbols if symbols is not None else {})
         self.X = area[0]
         self.Y = area[1]
 
@@ -266,11 +265,9 @@ class Encounter:
         """Draw a rough map of the characters in the encounter."""
         for i in range(self.Y):
             for j in range(self.X):
-                someone_here = False
                 who = '.'
                 for a, b in self.atlas.items():
                     if [j, i] == b:
-                        someone_here = True
                         who = self.symbols[a]
                 print(who, end='')
             print('')
