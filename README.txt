@@ -33,8 +33,20 @@ wish us luck!
 
 -Alex and Keegan
 
-                             CRONKBAND
-                            VERSION 0.2
-                       HONEY, I MOVED THE BOY
+                              CRONKBAND
+                             VERSION 0.2
+                        HONEY, I MOVED THE BOY
 
-We can move a boy around the screen now using a test method.
+In our first update to CronkBand, we have skeleton code for gametools 
+and gameview: enough, at least, to put together a very simple game loop 
+for gamelogic. This game loop creates an Enounter, puts a single 
+Character in that encounter, and changes the position of the player 
+according to player input on the directional keys. In order to try this 
+out, you will need to run 
+
+python [GAME DIRECTORY]/gamelogic.py
+
+from the terminal. Arrow keys control the '@' and ESC closes the window.
+This is pretty far from a completed game, but it's a big step from the 
+starting point. Next step: put Piles in the Encounter that the player 
+character can scoop up Pac-Man style.
