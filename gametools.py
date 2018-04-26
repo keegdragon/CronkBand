@@ -204,6 +204,22 @@ class Encounter:
         del self.people[name]
         del self.symbols[name]
 
+    def make_drawable(self):
+        """Package the encounter to a drawable format for GameView"""
+        drawable_env = []
+        drawable_line = ""
+        for i in range(self.Y):
+            for j in range(self.X):
+                someone_here = False
+                who = '.'
+                for a, b in self.atlas.items():
+                    if [j, i] == b:
+                        someone_here = True
+                        who = self.symbols[a]
+                drawable_line += who
+            drawable_env.append(drawable_line)
+        return drawable_env
+
     def draw(self):
         """Draw a rough map of the characters in the encounter."""
         for i in range(self.Y):
