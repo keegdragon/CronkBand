@@ -101,7 +101,7 @@ class Pile(Actor):
         self.solid = False
 
     def bump(self, whos_there):
-        whos_there.add_item(self.stuff)
+        whos_there.add(self.stuff)
 
 
 class Character(Actor):
@@ -198,7 +198,7 @@ class Character(Actor):
         for itm in self.inventory:
             if itm.name.lower() == name.lower():
                 self.equipment.append(itm)
-                self.drop_item(itm.name)
+                self.drop(itm.name)
                 found = True
         print(('Item equipped' if found else 'No item by that name found.'))
 
@@ -207,7 +207,7 @@ class Character(Actor):
         found = False
         for itm in self.equipment:
             if itm.name.lower() == name.lower():
-                self.add_item(itm)
+                self.add(itm)
                 self.equipment.remove(itm)
                 found = True
         print(('Item unequipped' if found else 'No item by that name found.'))
