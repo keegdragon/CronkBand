@@ -264,10 +264,9 @@ class Encounter:
     def make_drawable(self):
         """Package the encounter to a drawable format for GameView"""
         drawable_env = []
-        drawable_line = ""
         for i in range(self.Y):
+            drawable_line = ""
             for j in range(self.X):
-                someone_here = False
                 who = '.'
                 for a, b in self.atlas.items():
                     if [j, i] == b:
