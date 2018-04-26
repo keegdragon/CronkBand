@@ -1,25 +1,27 @@
 import random as r
 
+
 class Dice:
     """Describes a handful of dice."""
-    # We will probably want a more efficient way to resolve rolls, but 
+
+    # We will probably want a more efficient way to resolve rolls, but
     # for now it's nice to have the abstraction of a hand of dice.
     # Ha GAYYYY
     def __init__(self, d=6, n=0, name=''):
         self.name = name if (name != '') else 'Dice'
         if n > 0:
             d_key = str(d)
-            self.hand = {d_key:n}
+            self.hand = {d_key: n}
         elif n == 0:
             self.hand = {}
         else:
             print("You cannot have negative dice! No dice added to hand.")
             self.hand = {}
-    
+
     def check(self):
         """Return whichever dice are currently in hand."""
         return self.hand
-        
+
     def roll(self, d=0):
         """Roll dice currently in hand and return results."""
         rolls = {}
@@ -27,14 +29,14 @@ class Dice:
             d_key = str(d)
             v_list = []
             for i in range(self.hand(d_key)):
-                roll = r.randint(1,d)
+                roll = r.randint(1, d)
                 v_list.append(roll)
             rolls[d_key] = v_list
         else:
             for d, n in self.hand.items():
                 v_list = []
                 for j in range(n):
-                    roll = r.randint(0, int(d))
+                    roll = r.randint(1, int(d))
                     v_list.append(roll)
                 rolls[d] = v_list
         return rolls
@@ -42,154 +44,209 @@ class Dice:
     def drop(self):
         """Drop all dice from hand."""
         self.hand = {}
-    
+
     def grab(self, d, n):
         """Add n dice of type d to hand."""
         dn = str(d)
         self.hand[dn] = n if dn not in self.hand else self.hand[dn] + n
-   
+
     def rename(self, name):
         """Change the name of this hand of dice."""
         self.name = name
 
+
 class FloorPlan:
     """Describes a room's dimensions"""
+
     # Seems to be that this only supports rectangles at the moment.
     def __init__(self, plan):
         self.plan = plan
         self.x = plan[0].length()
         self.y = plan.length()
-    
+
+
+class Item:
+    """An Item can be held in a Character or Pile's inventory"""
+
+    def __init__(self, name='', mass=0, description='', quantity=1):
+        self.name = name
+        self.mass = mass
+        self.description = description
+        self.quantity = quantity
+
+
+class Spell(Item):
+    """Spells are used from the inventory to cast magic. idk how yet """
+
+    def use(self, logger):
+        logger.do_magic()
+        # We'll figure this out soon
+
+
 class Actor:
     """Generic actor for building map"""
+
     def __init___(self):
         self.solid = False
 
     def bump(self, whos_there):
         return self.solid
 
+
 class Pile(Actor):
     """A pile of something."""
+
     def __init__(self, stuff):
         self.stuff = stuff
         self.solid = False
 
     def bump(self, whos_there):
-        whos_there.add_item(stuff)
+        whos_there.add(self.stuff)
 
-class Item:
-    """An Item can be held in a Character or Pile's inventory"""
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
-    # We'll need to have a good long chat about how we want Items to 
-    # work:
-    # Should Item be a barebones class that is extended by e.g. Weapon?
-    # Should Item be used for ALL items with flags for item type?
-    # Should Item have a generic Use method that is made more specific
-    # for each derived class e.g. Weapon, Potion?
 
 class Character(Actor):
-    """Describes a character."""
+    """Describes a player-character based on D&D character sheet."""
 
-    def __init__(self, name, status=[], abilities=[], skills=[],
-                 equipment = [], inventory={}, spellbook=[]):
+    def __init__(self, name, status=None, abilities=None, skills=None, 
+                 equipment=None, inventory=None, spellbook=None):
+        self.status_list = ['Health', 'Max Health', 'Level', 'Experience']
+        self.abilities_list = ['Strength', 'Dexterity', 'Constitution',
+                               'Intelligence', 'Wisdom', 'Charisma']
+        self.skills_list = ['Acrobatics', 'Animal Handling', 'Arcana',
+                            'Athletics', 'Deception', 'History', 'Insight',
+                            'Intimidation', 'Investigation', 'Medicine',
+                            'Nature', 'Perception', 'Performance',
+                            'Persuasion', 'Religion', 'Sleight of Hand',
+                            'Stealth', 'Survival']
         self.name = name
-        self.status = status
-        self.abilities = abilities
-        self.skills = skills
-        self.inventory = inventory
-        self.spellbook = spellbook
+        self.status = (status if status is not None else [10, 10, 1, 0])
+        self.abilities = (abilities if abilities is not None
+                          else [8, 8, 8, 8, 8, 8])
+        self.skills = (skills if skills is not None else [False, False, False,
+                                                          False, False, False,
+                                                          False, False, False,
+                                                          False, False, False,
+                                                          False, False, False,
+                                                          False, False, False])
+        self.equipment = (equipment if equipment is not None else [])
+        self.inventory = (inventory if inventory is not None else [])
+        self.spellbook = (spellbook if spellbook is not None else [])
         self.solid = True
-    
-    # EXAMPLE
-    # name = 'Name McNameFace'
-    # status = [health, max_health, level, exp]           [int]
-    # abilities = [str, dex, con, int, wis, cha]          [int]
-    # skills = [acr, ani han, arc, ..., ste, sur]         [bool]
-    # equipment = [armor, hat, shoes, gloves, 
-    #              ring1, ring2, ..., necklace, 
-    #              left_hand, right_hand]                 [Item] 
-    # inventory = [potion_heal_a, pen, paper, quest_item] [Item]
-    # spellbook = [fireball, healing, ... ]               [Spell]
 
     def show_summary(self):
-        """Print all info about Character."""
+        """Print all info about Character.
+        Mostly just for development purposes, but could be used later.
+        """
         print(self.name)
         print('\nStatus: ')
-        for stat, val in self.status.items():
-            print(stat + ': ' + str(val))
+        for stt in range(len(self.status)):
+            print(self.status_list[stt] + ': ' + str(self.status[stt]))
         print('\nAbilities: ')
-        for ab, val in self.abilities.items():
-            print(ab + ': ' + str(val))
-        print('\nInventory: ')
-        for name, stuff in self.inventory.items():
-            print(name + ': ' + str(self.inventory[name]['quantity']) 
-                       + ', worth: ' 
-                       + str(self.inventory[name]['total_value']))
-        print('\nSpellbook: ')
-        for spell in self.spellbook.keys():
-            print(spell)
+        for abl in range(len(self.abilities)):
+            print(self.abilities_list[abl] + ': ' + str(self.abilities[abl]))
+        print('\nSkills: ')
+        for skl in range(len(self.skills)):
+            if self.skills[skl]:
+                print(self.skills_list[skl])
+        print('\nEquipment:')
+        for eqp in self.equipment:
+            print(eqp.name)
+        print('\nInventory:')
+        for itm in self.inventory:
+            print(itm.name + ' x' + str(itm.quantity))
+        print('\nSpellbooks:')
+        for spl in self.spellbook:
+            print(spl.name)
 
-    def item_details(self, item_name):
-        """Print the details of an item in character's inventory."""
-        if item_name in self.inventory:
-            print(item_name + ': ' + self.inventory[item_name])
-        else:
-            print('No item by that name in inventory!')
-    
     def show_inventory(self):
         """Print a detailed inventory list."""
         print('Inventory: \n')
-        for name, stuff in self.inventory.items():
-            print(name)
-            print('Quantity: ' + str(self.inventory[name]['quantity']))
-            print('Description: ' + self.inventory[name]['description'])
-            if self.inventory[name]['quantity'] > 1:
-                print('Value: ' + str(self.inventory[name]['value']))
-            print('Total Value: ' 
-                  + str(self.inventory[name]['total_value']) + '\n' )
+        for itm in self.inventory:
+            print(itm.name)
+            print('Quantity: ' + str(itm.quantity))
+            print('Description: ' + itm.description)
         print()
 
-    def add_item(self, name, quantity, description='', value_per=0):
-        """Add a type of item to the inventory."""
-        if name in self.inventory.keys():
-            self.inventory[name]['quantity'] +=  quantity
-            new_value = quantity * self.inventory[name]['value']
-            self.inventory[name]['total_value'] += new_value
-        else:
-            self.inventory[name] = {'quantity' : quantity, 
-                                    'description' : description, 
-                                    'value' : value_per, 
-                                    'total_value': value_per * quantity}
-    
-    def drop_item(self, name, quantity):
+    def add(self, new_item):
+        """Add an/many item/s to the inventory."""
+        found = False
+        for itm in self.inventory:
+            if itm.name == new_item.name:
+                itm.quantity += new_item.quantity
+                found = True
+                break
+        if not found:
+            self.inventory.append(new_item)
+
+    def drop(self, name, quantity=1):
         """Remove some or all of one item from the inventory."""
-        if name in self.inventory.keys():
-            quant_in = self.inventory[name]['quantity']
-            if quant_in > quantity:
-                new_quant = quant_in - quantity
-                new_val = new_quant * self.inventory[name]['value']
-                self.inventory[name]['quantity'] = new_quant
-                self.inventory[name]['total_value'] = new_val
-            else:
-                del self.inventory[name]
-        else:
+        found = False
+        for itm in self.inventory:
+            if itm.name == name:
+                if itm.quantity > quantity:
+                    itm.quantity -= quantity
+                else:
+                    self.inventory.remove(itm)
+                found = True
+                break
+        if not found:
             print('No item by that name in inventory!')
+
+    def equip(self, name):
+        """Move an item from the inventory to the equipment."""
+        found = False
+        for itm in self.inventory:
+            if itm.name.lower() == name.lower():
+                self.equipment.append(itm)
+                self.drop(itm.name)
+                found = True
+        print(('Item equipped' if found else 'No item by that name found.'))
+
+    def unequip(self, name):
+        """Move an item from the equipment to the inventory."""
+        found = False
+        for itm in self.equipment:
+            if itm.name.lower() == name.lower():
+                self.add(itm)
+                self.equipment.remove(itm)
+                found = True
+        print(('Item unequipped' if found else 'No item by that name found.'))
+
+    def toggle_skill(self, skill_name):
+        """Toggle on or off a skill by name (case-insensitive)"""
+        found = False
+        real_skill_name = ''
+        new_skill_state = False
+        for skl in self.skills_list:
+            if skl.lower() == skill_name.lower():
+                found = True
+                real_skill_name = skl
+                skl_idx = self.skills_list.index(skl)
+                self.skills[skl_idx] = not self.skills[skl_idx]
+                new_skill_state = self.skills[skl_idx]
+                break
+        if not found:
+            print('No skill of that name was found.')
+        else:
+            print(real_skill_name + ' was changed to ' + str(new_skill_state))
 
 
 class Encounter:
     """Describes the geography of an encounter."""
-    
-    def __init__(self, area, atlas={}, people={}, symbols={}):
-        self.atlas = atlas
-        self.people = people 
-        self.symbols = symbols 
+
+    def __init__(self, area, atlas=None, people=None, symbols=None):
+        self.atlas = (atlas if atlas is not None else {})
+        self.people = (people if people is not None else {})
+        self.symbols = (symbols if symbols is not None else {})
         self.X = area[0]
         self.Y = area[1]
 
-    def add_character(self, name, character, symbol, position):
+    def add_character(self, character, position, name='', symbol='', ):
         """Add a character to the encounter."""
+        if name == '':
+            name = character.name
+        if symbol == '':
+            symbol = character.name.strip()[0].lower()
         self.atlas[name] = position
         self.people[name] = character
         self.symbols[name] = symbol
@@ -224,11 +281,9 @@ class Encounter:
         """Draw a rough map of the characters in the encounter."""
         for i in range(self.Y):
             for j in range(self.X):
-                someone_here = False
                 who = '.'
                 for a, b in self.atlas.items():
                     if [j, i] == b:
-                        someone_here = True
                         who = self.symbols[a]
                 print(who, end='')
             print('')
