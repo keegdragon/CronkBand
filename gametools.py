@@ -261,6 +261,12 @@ class Encounter:
         del self.people[name]
         del self.symbols[name]
 
+    def actor_at(self, x, y):
+        for a, b in self.atlas.items():
+            if [x, y] == b:
+                return a
+        return 0
+
     def make_drawable(self):
         """Package the encounter to a drawable format for GameView"""
         drawable_env = []
