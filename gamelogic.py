@@ -1,17 +1,34 @@
 import gametools
 import gameview
 import pygame
+from random import *
 pygame.init()
 
 event_dir_dict = {pygame.K_UP: (0, -1), pygame.K_DOWN: (0, 1), pygame.K_LEFT: (-1, 0), pygame.K_RIGHT: (1, 0)}
 
-def take_turn(encounter, event_kind, event):
+def pile_game(encounter):
+    for actor in encounter.people.values():
+        if type(actor) is gametools.Pile:
+            return
+    sample_stuff = gametools.Pile(gametools.Item("Hammer", 5, "It's a hammer", 1))
+    encounter.add_character(sample_stuff, [randint(0,9), randint(0,9)], "loot_1", "$")
+    return
+
+
+def pc_actions(encounter, event_kind, event):
     if event_kind == "movement":
-        if not encounter.actor_at(encounter.atlas["player_1"][0] + event_dir_dict[event.key][0], \
-                                encounter.atlas["player_1"][1] + event_dir_dict[event.key][1]):
+        neighbor_name = encounter.name_at(encounter.atlas["player_1"][0] + event_dir_dict[event.key][0], \
+                           encounter.atlas["player_1"][1] + event_dir_dict[event.key][1])
+        if not neighbor_name:
             move(encounter, "player_1", event)
         else:
-            pass # "bump" goes here
+            neighbor = encounter.people[neighbor_name]
+            if not neighbor.bump(encounter.people["player_1"]):
+                move(encounter, "player_1", event)
+                encounter.remove_character(neighbor_name)
+
+def npc_actions(encounter):
+    pile_game(encounter)
 
 def move(encounter, mover_name, event):
     encounter.move_character(mover_name, \
@@ -20,9 +37,15 @@ def move(encounter, mover_name, event):
 
 def init_encounter():
     sample_boy = gametools.Character("Thadd")
+    sample_stuff = gametools.Pile(gametools.Item("Hammer", 5, "It's a hammer", 1))
     encounter = gametools.Encounter([10,10], {}, {}, {})
     encounter.add_character(sample_boy, [5,5], "player_1", "@")
+    encounter.add_character(sample_stuff, [7, 7], "loot_1", "$")
     return encounter
+
+def take_turn(encounter, event_kind, event):
+    pc_actions(encounter, event_kind, event)
+    npc_actions(encounter)
 
 # Listens for input and directs to auxiliary input processing functions
 # game_loop may also prompt for additional input

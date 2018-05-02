@@ -102,6 +102,7 @@ class Pile(Actor):
 
     def bump(self, whos_there):
         whos_there.add(self.stuff)
+        return self.solid
 
 
 class Character(Actor):
@@ -261,7 +262,7 @@ class Encounter:
         del self.people[name]
         del self.symbols[name]
 
-    def actor_at(self, x, y):
+    def name_at(self, x, y):
         for a, b in self.atlas.items():
             if [x, y] == b:
                 return a
