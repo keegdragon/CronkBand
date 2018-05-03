@@ -50,3 +50,15 @@ from the terminal. Arrow keys control the '@' and ESC closes the window.
 This is pretty far from a completed game, but it's a big step from the 
 starting point. Next step: put Piles in the Encounter that the player 
 character can scoop up Pac-Man style.
+
+                              CRONKBAND
+                             VERSION 0.3
+                        THE BOY WHO DID STUFF
+
+For the second update to CronkBand, Keegan developed a nifty new game 
+loop with slots for player character (PC) actions and for non-player 
+character (NPC) logic and actions. This allowed him to improve the test 
+game to include Piles for the PC to "pick up". Next step: give Encounter
+an indexing system so that finding neighbors in the atlas isn't so time-
+intensive.
+
