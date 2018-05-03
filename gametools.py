@@ -102,6 +102,7 @@ class Pile(Actor):
 
     def bump(self, whos_there):
         whos_there.add(self.stuff)
+        return self.solid
 
 
 class Character(Actor):
@@ -260,6 +261,12 @@ class Encounter:
         del self.atlas[name]
         del self.people[name]
         del self.symbols[name]
+
+    def name_at(self, x, y):
+        for a, b in self.atlas.items():
+            if [x, y] == b:
+                return a
+        return 0
 
     def make_drawable(self):
         """Package the encounter to a drawable format for GameView"""
