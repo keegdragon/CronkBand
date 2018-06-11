@@ -1,70 +1,3 @@
-import random as r
-
-
-class Dice:
-    """Describes a handful of dice."""
-
-    # We will probably want a more efficient way to resolve rolls, but
-    # for now it's nice to have the abstraction of a hand of dice.
-    # Ha GAYYYY
-    def __init__(self, d=6, n=0, name=''):
-        self.name = name if (name != '') else 'Dice'
-        if n > 0:
-            d_key = str(d)
-            self.hand = {d_key: n}
-        elif n == 0:
-            self.hand = {}
-        else:
-            print("You cannot have negative dice! No dice added to hand.")
-            self.hand = {}
-
-    def check(self):
-        """Return whichever dice are currently in hand."""
-        return self.hand
-
-    def roll(self, d=0):
-        """Roll dice currently in hand and return results."""
-        rolls = {}
-        if d != 0:
-            d_key = str(d)
-            v_list = []
-            for i in range(self.hand(d_key)):
-                roll = r.randint(1, d)
-                v_list.append(roll)
-            rolls[d_key] = v_list
-        else:
-            for d, n in self.hand.items():
-                v_list = []
-                for j in range(n):
-                    roll = r.randint(1, int(d))
-                    v_list.append(roll)
-                rolls[d] = v_list
-        return rolls
-
-    def drop(self):
-        """Drop all dice from hand."""
-        self.hand = {}
-
-    def grab(self, d, n):
-        """Add n dice of type d to hand."""
-        dn = str(d)
-        self.hand[dn] = n if dn not in self.hand else self.hand[dn] + n
-
-    def rename(self, name):
-        """Change the name of this hand of dice."""
-        self.name = name
-
-
-class FloorPlan:
-    """Describes a room's dimensions"""
-
-    # Seems to be that this only supports rectangles at the moment.
-    def __init__(self, plan):
-        self.plan = plan
-        self.x = plan[0].length()
-        self.y = plan.length()
-
-
 class Item:
     """An Item can be held in a Character or Pile's inventory"""
 
@@ -73,14 +6,6 @@ class Item:
         self.mass = mass
         self.description = description
         self.quantity = quantity
-
-
-class Spell(Item):
-    """Spells are used from the inventory to cast magic. idk how yet """
-
-    def use(self, logger):
-        logger.do_magic()
-        # We'll figure this out soon
 
 
 class Actor:
@@ -96,9 +21,11 @@ class Actor:
 class Pile(Actor):
     """A pile of something."""
 
-    def __init__(self, stuff):
+    def __init__(self, stuff, name='Pile'):
         self.stuff = stuff
         self.solid = False
+        self.symbol = '$'
+        self.name = name
 
     def bump(self, whos_there):
         whos_there.add(self.stuff)
@@ -108,7 +35,7 @@ class Pile(Actor):
 class Character(Actor):
     """Describes a player-character based on D&D character sheet."""
 
-    def __init__(self, name, status=None, abilities=None, skills=None, 
+    def __init__(self, name, symbol, status=None, abilities=None, skills=None,
                  equipment=None, inventory=None, spellbook=None):
         self.status_list = ['Health', 'Max Health', 'Level', 'Experience']
         self.abilities_list = ['Strength', 'Dexterity', 'Constitution',
@@ -120,6 +47,7 @@ class Character(Actor):
                             'Persuasion', 'Religion', 'Sleight of Hand',
                             'Stealth', 'Survival']
         self.name = name
+        self.symbol = symbol
         self.status = (status if status is not None else [10, 10, 1, 0])
         self.abilities = (abilities if abilities is not None
                           else [8, 8, 8, 8, 8, 8])
@@ -138,7 +66,7 @@ class Character(Actor):
         """Print all info about Character.
         Mostly just for development purposes, but could be used later.
         """
-        print(self.name)
+        print(self.name + ", " + self.symbol)
         print('\nStatus: ')
         for stt in range(len(self.status)):
             print(self.status_list[stt] + ': ' + str(self.status[stt]))
@@ -235,61 +163,83 @@ class Character(Actor):
 class Encounter:
     """Describes the geography of an encounter."""
 
-    def __init__(self, area, atlas=None, people=None, symbols=None):
-        self.atlas = (atlas if atlas is not None else {})
-        self.people = (people if people is not None else {})
-        self.symbols = (symbols if symbols is not None else {})
-        self.X = area[0]
-        self.Y = area[1]
+    def __init__(self, area):
+        self.atlas = {}
+        self.people = []
+        self.game_board = []
+        for i in range(area[0]):
+            column = [None] * area[1]
+            self.game_board.append(column)
 
-    def add_character(self, character, position, name='', symbol='', ):
+    def add_character(self, character, position):
         """Add a character to the encounter."""
-        if name == '':
-            name = character.name
-        if symbol == '':
-            symbol = character.name.strip()[0].lower()
-        self.atlas[name] = position
-        self.people[name] = character
-        self.symbols[name] = symbol
+        if character not in self.people:
+            self.atlas[character.name] = position
+            self.people.append(character)
+            if self.game_board[position[0]][position[1]] is None:
+                self.game_board[position[0]][position[1]] = character
+            else:
+                print("Position (" + position[0] + ", " + position[1] + ") "
+                      + "is occupied.")
+        else:
+            print("Character " + character.name + " is already in the "
+                  + "encounter.")
 
-    def move_character(self, name, position):
+    def move_character(self, character, position):
         """Change the position of the character."""
-        self.atlas[name] = position
+        old_position = self.atlas[character.name]
+        self.game_board[old_position[0]][old_position[1]] = None
+        self.atlas[character.name] = position
+        self.game_board[position[0]][position[1]] = character
 
-    def remove_character(self, name):
+    def remove_character(self, character):
         """Remove a charcter from the encounter."""
-        del self.atlas[name]
-        del self.people[name]
-        del self.symbols[name]
+        position = self.atlas[character.name]
+        self.game_board[position[0]][position[1]] = None
+        del self.atlas[character.name]
+        self.people.remove(character)
 
     def name_at(self, x, y):
-        for a, b in self.atlas.items():
-            if [x, y] == b:
-                return a
-        return 0
+        """Return the name of the character at (x, y)."""
+        return (self.game_board[x][y].name if self.game_board[x][y] is not None
+                else None)
 
     def make_drawable(self):
         """Package the encounter to a drawable format for GameView"""
         drawable_env = []
-        for i in range(self.Y):
+        for column in self.game_board:
             drawable_line = ""
-            for j in range(self.X):
-                who = '.'
-                for a, b in self.atlas.items():
-                    if [j, i] == b:
-                        someone_here = True
-                        who = self.symbols[a]
-                drawable_line += who
+            for point in column:
+                symbol = point.symbol if point is not None else '.'
+                drawable_line += symbol
             drawable_env.append(drawable_line)
         return drawable_env
 
     def draw(self):
         """Draw a rough map of the characters in the encounter."""
-        for i in range(self.Y):
-            for j in range(self.X):
-                who = '.'
-                for a, b in self.atlas.items():
-                    if [j, i] == b:
-                        who = self.symbols[a]
-                print(who, end='')
+        for column in self.game_board:
+            for point in column:
+                symbol = point.symbol if point is not None else '.'
+                print(symbol, end='')
             print('')
+
+    def player_to_front(self, player_name):
+        """Make the player the 0th item in the list if they aren't already.
+        Returns True iff the player was already at people[0]."""
+        player = None
+        found_player = False
+        player_already_at_front = False
+        for person in self.people:
+            if person.name is player_name:
+                player = person
+                found_player = True
+                break
+        if found_player:
+            player_already_at_front = True
+            if self.people[0] is not player:
+                player_already_at_front = False
+                self.people.remove(player)
+                self.people.insert(0, player)
+        else:
+            print("Player by that name not found.")
+        return player_already_at_front
