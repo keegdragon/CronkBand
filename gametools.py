@@ -36,7 +36,7 @@ class Character(Actor):
     """Describes a player-character based on D&D character sheet."""
 
     def __init__(self, name, symbol, status=None, abilities=None, skills=None,
-                 equipment=None, inventory=None, spellbook=None):
+                 equipment=None, inventory=None, spellbook=None, pc=False):
         self.status_list = ['Health', 'Max Health', 'Level', 'Experience']
         self.abilities_list = ['Strength', 'Dexterity', 'Constitution',
                                'Intelligence', 'Wisdom', 'Charisma']
@@ -61,6 +61,7 @@ class Character(Actor):
         self.inventory = (inventory if inventory is not None else [])
         self.spellbook = (spellbook if spellbook is not None else [])
         self.solid = True
+        self.player = pc
 
     def show_summary(self):
         """Print all info about Character.
@@ -187,10 +188,14 @@ class Encounter:
 
     def move_character(self, character, position):
         """Change the position of the character."""
-        old_position = self.atlas[character.name]
-        self.game_board[old_position[0]][old_position[1]] = None
-        self.atlas[character.name] = position
-        self.game_board[position[0]][position[1]] = character
+        if self.check_point(position):
+            old_position = self.atlas[character.name]
+            self.game_board[old_position[0]][old_position[1]] = None
+            self.atlas[character.name] = position
+            self.game_board[position[0]][position[1]] = character
+            return True
+        else:
+            return False
 
     def remove_character(self, character):
         """Remove a charcter from the encounter."""
@@ -243,3 +248,16 @@ class Encounter:
         else:
             print("Player by that name not found.")
         return player_already_at_front
+
+    def check_point(self, position):
+        """Determine if a point in the encounter is open."""
+        x, y = position[0], position[1]
+        if x > len(self.game_board)-1 or y > len(self.game_board[0])-1:
+            print("(" + str(x) + ", " + str(y)
+                  + ") is not within the game board.")
+        else:
+            if self.game_board[x][y] is None:
+                return True
+            else:
+                print("(" + str(x) + ", " + str(y) + ") is occupied.")
+        return False

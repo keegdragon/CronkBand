@@ -22,15 +22,22 @@ def pc_actions(encounter, event_kind, event):
     encounter.player_to_front("Rupert")
     player = encounter.people[0]
     if event_kind == "movement":
-        move_to_x = encounter.atlas[player.name][0] + event_dir_dict[event.key][0]
-        move_to_y = encounter.atlas[player.name][1] + event_dir_dict[event.key][1]
-        neighbor = encounter.game_board[move_to_x][move_to_y]
-        if neighbor is None:
-            move(encounter, player, event)
-        else:
-            if not neighbor.bump(player):
+        move_to_x = (encounter.atlas[player.name][0]
+                     + event_dir_dict[event.key][0])
+        move_to_y = (encounter.atlas[player.name][1]
+                     + event_dir_dict[event.key][1])
+        if (move_to_x < len(encounter.game_board)
+                and move_to_y < len(encounter.game_board[0])):
+            neighbor = encounter.game_board[move_to_x][move_to_y]
+            if neighbor is None:
                 move(encounter, player, event)
-                encounter.remove_character(neighbor)
+            else:
+                if not neighbor.bump(player):
+                    encounter.remove_character(neighbor)
+                    move(encounter, player, event)
+        else:
+            print('(' + str(move_to_x) + ', ' + str(move_to_y)
+                  + ') is outside the game board.')
 
 
 def npc_actions(encounter):
