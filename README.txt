@@ -53,7 +53,7 @@ character can scoop up Pac-Man style.
 
                               CRONKBAND
                              VERSION 0.3
-                        THE BOY WHO DID STUFF
+                THE BOY WHO LIVED (AND PICKED UP PILES)
 
 For the second update to CronkBand, Keegan developed a nifty new game 
 loop with slots for player character (PC) actions and for non-player 
@@ -62,3 +62,14 @@ game to include Piles for the PC to "pick up". Next step: give Encounter
 an indexing system so that finding neighbors in the atlas isn't so time-
 intensive.
 
+                              CRONKBAND
+                             VERSION 0.4
+           THE BOY WITH THE DRAGON TATTOO (AND A PLAYER FLAG)
+
+For the third update to CronkBand, Alex decided to temporarily break the 
+game in order to change how the program keeps track of where actors are. 
+This means that most of the time spent working on this update went into 
+all the work needed to fix everything that got broken when that change 
+was made. Expect no performance improvements from this update; if 
+anything, the game might be slower as it's storing everything in the 
+world rather than just the locations of interest.
